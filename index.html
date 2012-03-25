@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Button Tool</title>
+    <link rel="stylesheet" href="css/screen.css" />
+  </head>
+  <body>
+    <a href="http://github.com/ZaneA/ButtonTool"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/30f550e0d38ceb6ef5b81500c64d970b7fb0f028/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub"></a>
+
+    <h1>Button Tool</h1>
+    <p>This tool aids in the creation of GUI elements using CSS.</p>
+
+    <div class="output">
+      <h2>
+        Output
+        <div class="options">
+          <label>Show Grid? <input type="checkbox" id="grid" /></label>
+          <label>16x16 <input type="radio" name="size" value="16" /></label>
+          <label>32x32 <input type="radio" name="size" value="32" /></label>
+          <label>64x64 <input type="radio" name="size" value="64" checked="checked" /></label>
+          <label>128x128 <input type="radio" name="size" value="128" /></label>
+          <label>256x256 <input type="radio" name="size" value="256" /></label>
+        </div>
+      </h2>
+      <p>Right click and select "Save Image As.." to save your graphic. Remember to hide the grid first!</p>
+      <canvas id="renderCanvas" style="border: 1px solid #f00" width="64" height="64"></canvas>
+    </div>
+
+    <div id="main">
+      <div class="output">
+        <h2>
+          Button Preview
+          <div class="options">
+            <label>Show Advanced CSS? <input type="checkbox" id="basecss-toggle" /></label>
+          </div>
+        </h2>
+        <canvas id="canvas" style="border: none" width="256" height="64"></canvas>
+      </div>
+
+      <textarea id="css" rows="10" style="width: 100%">
+#button {
+  color: #fff;
+  background: -moz-linear-gradient(90deg, #000, #444);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+</textarea>
+
+    <textarea id="basecss" rows="40" style="width: 100%; display: none">
+html, body {
+  margin: 0;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0);
+  text-align: center;
+  font-size: 17pt;
+}
+
+div {
+  width: 100%;
+  height: 100%;
+}
+
+#wrapper {
+  display: table;
+}
+
+#cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.left {
+  line-height: 50px;
+}
+
+.right {
+  line-height: 0;
+}
+</textarea>
+</div>
+
+    <iframe id="frame" style="visibility: hidden" width="256" height="64" scrolling="no"></iframe>
+    <iframe id="renderFrame" style="visibility: hidden" width="64" height="64" scrolling="no"></iframe>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script type="text/javascript">!window.jQuery && document.write(unescape('%3Cscript src="/js/jquery.min.js"%3E%3C/script%3E'))</script>
+    <script type="text/javascript">
+      $(function () {
+        function draw(css, basecss) {
+          $("#frame").attr("src", "data:text/html;charset=utf-8,<style>" + encodeURIComponent(css) + encodeURIComponent(basecss) + "</style><div id=\"wrapper\"><div id=\"cell\"><div id=\"button\" class=\"left\">Hello, World!</div></div></div>");
+          $("#renderFrame").attr("src", "data:text/html;charset=utf-8,<style>" + encodeURIComponent(css) + encodeURIComponent(basecss) + "</style><div id=\"wrapper\"><div id=\"cell\"><div id=\"button\" class=\"right\">&nbsp;</div></div></div>");
+        }
+
+        function renderCanvas(c, f, grid) {
+          var canvas = document.getElementById(c);
+          var ctx = canvas.getContext("2d");
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawWindow(document.getElementById(f).contentWindow, 0, 0, canvas.width, canvas.height, "rgba(0, 0, 0, 0)");
+
+          if (grid) {
+            var width =  canvas.width / 3;
+            var height = canvas.height / 3;
+            ctx.strokeStyle = "#f00";
+            ctx.beginPath();
+            // Vertical lines
+            ctx.moveTo(width, 0);
+            ctx.lineTo(width, canvas.height);
+            ctx.moveTo(width * 2, 0);
+            ctx.lineTo(width * 2, canvas.height);
+
+            // Horizontal lines
+            ctx.moveTo(0, height);
+            ctx.lineTo(canvas.width, height);
+            ctx.moveTo(0, height * 2);
+            ctx.lineTo(canvas.width, height * 2);
+            ctx.stroke();
+          }
+        }
+
+        $("iframe").load(function () {
+          netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+
+          renderCanvas("canvas", "frame", false);
+          renderCanvas("renderCanvas", "renderFrame", $("#grid").is(":checked"));
+        });
+
+        function drawWithCSS() {
+          draw($("#css").val(), $("#basecss").val());
+        }
+
+        drawWithCSS();
+
+        $("textarea").keyup(function () {
+          drawWithCSS();
+        });
+
+        $("#grid").click(function () {
+          drawWithCSS();
+        });
+
+        $("#basecss-toggle").click(function () {
+          $("#basecss").toggle();
+        });
+
+        $("input:radio[name=size]").click(function () {
+          $("#renderCanvas, #renderFrame").attr({ width: $(this).val(), height: $(this).val() });
+          drawWithCSS();
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 ButtonTool
 ===
 
-![Screenshot](https://github.com/ZaneA/ButtonTool/raw/screenshot.png "Screenshot")
+![Screenshot](https://github.com/ZaneA/ButtonTool/raw/master/screenshot.png "Screenshot")
 
 A little HTML tool that aids in the creation of GUI elements using CSS (as opposed to an image editor such as Photoshop).
 
